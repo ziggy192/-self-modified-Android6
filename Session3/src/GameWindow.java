@@ -1,4 +1,8 @@
+import controllers.PlaneController;
+import models.*;
+import models.Plane;
 import utils.Utils;
+import views.PlaneView;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -19,14 +23,16 @@ public class GameWindow extends Frame implements Runnable {
     Image backgroundImage = null;
     Image backBufferImage;
 
-    Plane plane;
-    Plane plane2;
+    PlaneController planeController;
     Vector<Bullet> bulletVector;
     Vector<EnemyPlane> enemyPlaneVector;
     Vector<EnemyBullet> enemyBulletVector;
 
     public GameWindow() {
-
+        planeController = new PlaneController(
+                new Plane(BACKGROUND_WIDTH  / 2, BACKGROUND_HEIGHT - Plane.PLANE_HEIGHT),
+                new PlaneView(Utils.loadImageFromRes("plane3.png"))
+        );
         backBufferImage = new BufferedImage(BACKGROUND_WIDTH,
                 BACKGROUND_HEIGHT, BufferedImage.TYPE_INT_ARGB);
 
@@ -43,15 +49,6 @@ public class GameWindow extends Frame implements Runnable {
                     x, y, enemyPlaneImage
             );
             enemyPlaneVector.add(enemyPlane);
-        }
-
-        try {
-            plane = new Plane(350, 250,
-                    ImageIO.read(new File("resources/plane3.png")));
-            plane2 = new Plane(450, 250,
-                    ImageIO.read(new File("resources/plane4.png")));
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
         this.setVisible(true);
@@ -103,7 +100,7 @@ public class GameWindow extends Frame implements Runnable {
 
             @Override
             public void mouseMoved(MouseEvent e) {
-                plane2.mouseMoved(e);
+//                plane2.mouseMoved(e);
             }
         });
 
@@ -116,20 +113,21 @@ public class GameWindow extends Frame implements Runnable {
             @Override
             public void keyPressed(KeyEvent e) {
                 System.out.println("keyPressed");
-                plane.keyPressed(e);
+                planeController.keyPressed(e);
 
-                if(e.getKeyCode() == KeyEvent.VK_SPACE) {
-                    Image bulletImage = Utils.loadImage("resources/bullet.png");
-                    Bullet newBullet = new Bullet(
-                            plane.getMiddleX() - Bullet.BULLET_WIDTH / 2,
-                            plane.getY() - Bullet.BULLET_HEIGHT,
-                            bulletImage);
-                    bulletVector.add(newBullet);
-                }
+//                if(e.getKeyCode() == KeyEvent.VK_SPACE) {
+//                    Image bulletImage = Utils.loadImage("resources/bullet.png");
+//                    Bullet newBullet = new Bullet(
+//                            plane.getMiddleX() - Bullet.BULLET_WIDTH / 2,
+//                            plane.getY() - Bullet.BULLET_HEIGHT,
+//                            bulletImage);
+//                    bulletVector.add(newBullet);
+//                }
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
+                planeController.keyReleased(e);
                 System.out.println("keyReleased");
             }
         });
@@ -158,8 +156,8 @@ public class GameWindow extends Frame implements Runnable {
                 0, 0,
                 BACKGROUND_WIDTH, BACKGROUND_HEIGHT, null);
 
-        plane.drawImage(backBufferGraphics);
-        plane2.drawImage(backBufferGraphics);
+        planeController.draw(backBufferGraphics);
+//        plane2.drawImage(backBufferGraphics);
         for (Bullet bullet : bulletVector) {
             bullet.drawImage(backBufferGraphics);
         }
@@ -185,32 +183,33 @@ public class GameWindow extends Frame implements Runnable {
             try {
                 Thread.sleep(17);
                 repaint();
+                planeController.run();
 
                 count++;
 
-                for (Bullet bullet : bulletVector) {
-                    bullet.fly();
-                }
+//                for (Bullet bullet : bulletVector) {
+//                    bullet.fly();
+//                }
+//
+//                for (EnemyPlane enemyPlane : enemyPlaneVector) {
+//                    enemyPlane.fly();
+//                }
+//
+//                if(count >= 10) {
+//                    count = 0;
+//                    for (EnemyPlane enemyPlane : enemyPlaneVector) {
+//                        EnemyBullet enemyBullet = new EnemyBullet(
+//                                enemyPlane.getMiddleX(),
+//                                enemyPlane.getBottom(),
+//                                Utils.loadImageFromRes("enemy_bullet.png")
+//                        );
+//                        enemyBulletVector.add(enemyBullet);
+//                    }
+//                }
 
-                for (EnemyPlane enemyPlane : enemyPlaneVector) {
-                    enemyPlane.fly();
-                }
-
-                if(count >= 10) {
-                    count = 0;
-                    for (EnemyPlane enemyPlane : enemyPlaneVector) {
-                        EnemyBullet enemyBullet = new EnemyBullet(
-                                enemyPlane.getMiddleX(),
-                                enemyPlane.getBottom(),
-                                Utils.loadImageFromRes("enemy_bullet.png")
-                        );
-                        enemyBulletVector.add(enemyBullet);
-                    }
-                }
-
-                for(EnemyBullet enemyBullet : enemyBulletVector) {
-                    enemyBullet.fly();
-                }
+//                for(EnemyBullet enemyBullet : enemyBulletVector) {
+//                    enemyBullet.fly();
+//                }
 
 
             } catch (InterruptedException e) {

@@ -46,7 +46,6 @@ public class PlaneController {
         System.out.println("keyReleased");
         switch (e.getKeyCode()) {
             case KeyEvent.VK_RIGHT:
-
             case KeyEvent.VK_LEFT:
                 dx = 0;
                 break;
