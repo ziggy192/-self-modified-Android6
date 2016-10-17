@@ -18,8 +18,8 @@ public class GameView {
 
     public void drawImage(Graphics g, GameObject gameObject) {
         g.drawImage(image,
-                gameObject.getX(),
-                gameObject.getY(),
+                gameObject.getX()-gameObject.getWidth()/2,
+                gameObject.getY()-gameObject.getHeight()/2,
                 gameObject.getWidth(),
                 gameObject.getHeight(),
                 null);

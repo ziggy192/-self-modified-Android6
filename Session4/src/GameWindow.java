@@ -1,5 +1,6 @@
-import controllers.BulletController;
-import controllers.PlaneController;
+import controllers.*;
+import models.EnemyBullet;
+import models.EnemyPlane;
 import models.Plane;
 import utils.Utils;
 import views.GameView;
@@ -24,30 +25,45 @@ public class GameWindow extends Frame implements Runnable {
     Image backBufferImage;
 
     PlaneController planeController;
-    Vector<EnemyPlane> enemyPlaneVector;
-    Vector<EnemyBullet> enemyBulletVector;
+    PlaneController planeController2;
+//    Vector<EnemyPlaneController> enemyPlaneVector;
+//    Vector<EnemyBullet> enemyBulletVector;
+    ControllerManager enemyPlaneControllerManager;
+    Vector<BaseController> controllers ;
+
+
+
+    Vector<GameSingleController> gameSingleControllers;
 
     public GameWindow() {
+        controllers= new Vector<>();
+        gameSingleControllers = new Vector<>();
 
-        planeController = new PlaneController(
-                new Plane(BACKGROUND_WIDTH  / 2, BACKGROUND_HEIGHT - Plane.PLANE_HEIGHT),
-                new GameView(Utils.loadImageFromRes("plane3.png"))
-        );
+        PlaneController planeController = PlaneController.planeController;
+        PlaneController planeController2 = PlaneController.planeController2;
+
+
+//
+//        gameSingleControllers.add(planeController);
+//        gameSingleControllers.add(planeController2);
+        controllers.add(planeController);
+        controllers.add(planeController2);
+
+        enemyPlaneControllerManager = new ControllerManager();
         backBufferImage = new BufferedImage(BACKGROUND_WIDTH,
                 BACKGROUND_HEIGHT, BufferedImage.TYPE_INT_ARGB);
+        controllers.add(enemyPlaneControllerManager);
 
-        enemyPlaneVector = new Vector<>();
-        enemyBulletVector = new Vector<>();
 
-        Image enemyPlaneImage = Utils.loadImageFromRes("plane1.png");
 
-        for(int i = 0; i < 10; i++) {
+
+        for (int i = 0; i < 10; i++) {
             int y = 60;
             int x = i * (EnemyPlane.ENEMY_PLANE_WIDTH + 5);
-            EnemyPlane enemyPlane = new EnemyPlane(
-                    x, y, enemyPlaneImage
-            );
-            enemyPlaneVector.add(enemyPlane);
+            enemyPlaneControllerManager.add(new EnemyPlaneController(
+                    new EnemyPlane(x, y),
+                    new GameView(Utils.loadImageFromRes("plane1.png"))
+            ));
         }
 
         this.setVisible(true);
@@ -99,29 +115,43 @@ public class GameWindow extends Frame implements Runnable {
 
             @Override
             public void mouseMoved(MouseEvent e) {
-//                plane2.mouseMoved(e);
+                planeController2.mouseMoved(e);
             }
         });
+        this.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                planeController2.mouseClicked(e);
+            }
 
+            @Override
+            public void mousePressed(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+
+            }
+        });
         this.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {
-                System.out.println("keyTyped");
             }
 
             @Override
             public void keyPressed(KeyEvent e) {
-                System.out.println("keyPressed");
                 planeController.keyPressed(e);
-
-//                if(e.getKeyCode() == KeyEvent.VK_SPACE) {
-//                    Image bulletImage = Utils.loadImage("resources/bullet.png");
-//                    models.Bullet newBullet = new models.Bullet(
-//                            plane.getMiddleX() - models.Bullet.BULLET_WIDTH / 2,
-//                            plane.getY() - models.Bullet.BULLET_HEIGHT,
-//                            bulletImage);
-//                    bulletVector.add(newBullet);
-//                }
 
 
             }
@@ -129,12 +159,11 @@ public class GameWindow extends Frame implements Runnable {
             @Override
             public void keyReleased(KeyEvent e) {
                 planeController.keyReleased(e);
-                System.out.println("keyReleased");
             }
         });
 
         try {
-            backgroundImage = ImageIO.read (
+            backgroundImage = ImageIO.read(
                     new File("resources/background.png"));
             System.out.println("Loaded backgroundImage");
         } catch (IOException e) {
@@ -157,57 +186,46 @@ public class GameWindow extends Frame implements Runnable {
                 0, 0,
                 BACKGROUND_WIDTH, BACKGROUND_HEIGHT, null);
 
-        planeController.draw(backBufferGraphics);
-//        plane2.drawImage(backBufferGraphics);
+//        for (GameSingleController gameSingleController : gameSingleControllers) {
+//            gameSingleController.draw(backBufferGraphics);
+//        }
+//        enemyPlaneControllerManager.draw(backBufferGraphics);
 
-        for(EnemyPlane enemyPlane : enemyPlaneVector) {
-            enemyPlane.drawImage(backBufferGraphics);
+        for (BaseController baseControllers : controllers) {
+            baseControllers.draw(backBufferGraphics);
         }
-
-        for(EnemyBullet enemyBullet : enemyBulletVector) {
-            enemyBullet.drawImage(backBufferGraphics);
-        }
-
         g.drawImage(backBufferImage,
                 0, 0,
                 BACKGROUND_WIDTH, BACKGROUND_HEIGHT, null);
     }
 
     int count = 0;
+    public void colisionEnemyPlane_Bullet(ControllerManager enemyPlaneControllerManager,
+                                        ControllerManager planeBulletControllerManager ){
+        GameSingleController removingController = enemyPlaneControllerManager.getColision(planeBulletControllerManager);
+        if (removingController != null)  {
+            System.out.println("COLLIDED!!!");
+            enemyPlaneControllerManager.remove(removingController);
+        }
 
+
+    }
+    public void checkColision(){
+            colisionEnemyPlane_Bullet(enemyPlaneControllerManager,planeController.getBulletControllers());
+            colisionEnemyPlane_Bullet(enemyPlaneControllerManager,planeController2.getBulletControllers());
+
+    }
     @Override
     public void run() {
-        while(true) {
+        while (true) {
             try {
                 Thread.sleep(17);
                 repaint();
-                planeController.run();
-
-                count++;
-
-//                for (models.Bullet bullet : bulletVector) {
-//                    bullet.fly();
-//                }
-//
-//                for (EnemyPlane enemyPlane : enemyPlaneVector) {
-//                    enemyPlane.fly();
-//                }
-//
-//                if(count >= 10) {
-//                    count = 0;
-//                    for (EnemyPlane enemyPlane : enemyPlaneVector) {
-//                        EnemyBullet enemyBullet = new EnemyBullet(
-//                                enemyPlane.getMiddleX(),
-//                                enemyPlane.getBottom(),
-//                                Utils.loadImageFromRes("enemy_bullet.png")
-//                        );
-//                        enemyBulletVector.add(enemyBullet);
-//                    }
-//                }
-
-//                for(EnemyBullet enemyBullet : enemyBulletVector) {
-//                    enemyBullet.fly();
-//                }
+                for (BaseController baseControllers : controllers) {
+                    baseControllers.run();
+                }
+                checkColision();
+//                enemyPlaneControllerManager.run();
 
 
             } catch (InterruptedException e) {

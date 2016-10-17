@@ -1,6 +1,7 @@
 package controllers;
 
 import models.Bullet;
+import models.GameConfig;
 import models.GameObject;
 import models.Plane;
 import utils.Utils;
@@ -9,42 +10,36 @@ import views.GameView;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.util.Vector;
 
 /**
  * Created by asus on 10/9/2016.
  */
-public class PlaneController extends GameController {
+public class PlaneController extends GameSingleController {
     private static final int SHOOT_DURATION = 20;
 
     private int dx;
     private int dy;
     public static final int SPEED = 10;
 
-    private Vector<BulletController> bulletControllers;
+    //private Vector<BulletController> bulletControllers;
+    ControllerManager bulletControllers;
 
     public PlaneController(GameObject gameObject, GameView gameView) {
         super(gameObject, gameView);
-//        bulletControllers = new Vector<>();
+        bulletControllers = new ControllerManager();
     }
 
-//    public PlaneController(Plane plane, GameView planeView) {
-//        this.plane = plane;
-//        this.planeView = planeView;
-//        bulletControllers = new Vector<>();
-//    }
 
     public void keyPressed(KeyEvent e) {
-        System.out.println("keyPressed");
         switch (e.getKeyCode()) {
             case KeyEvent.VK_RIGHT:
                 dx = SPEED;
                 break;
             case KeyEvent.VK_LEFT:
-                dx -= SPEED;
+                dx = -SPEED;
                 break;
             case KeyEvent.VK_UP:
-                dy -= SPEED;
+                dy = -SPEED;
                 break;
             case KeyEvent.VK_DOWN:
                 dy = SPEED;
@@ -55,9 +50,9 @@ public class PlaneController extends GameController {
 
         }
     }
+
     public void keyReleased(KeyEvent e) {
 
-        System.out.println("keyReleased");
         switch (e.getKeyCode()) {
             case KeyEvent.VK_RIGHT:
             case KeyEvent.VK_LEFT:
@@ -71,34 +66,56 @@ public class PlaneController extends GameController {
         }
     }
 
+    @Override
+
+    public void draw(Graphics g) {
+        super.draw(g);
+        bulletControllers.draw(g);
+
+
+    }
+
     private int count;
 
-    public void run(){
+    public ControllerManager getBulletControllers() {
+        return bulletControllers;
+    }
+
+    @Override
+    public void run() {
+
         // update model
         gameObject.move(dx, dy);
+        bulletControllers.run();
 
-        for(BulletController bulletController : bulletControllers) {
-            bulletController.run();
-        }
     }
 
     private void createBullet() {
         BulletController bulletController = new BulletController(
-                new Bullet(gameObject.getMiddleX(), gameObject.getY()),
+                new Bullet(gameObject.getX(), gameObject.getY()),
                 new GameView(Utils.loadImageFromRes("bullet.png"))
         );
         bulletControllers.add(bulletController);
     }
 
-//    public void draw(Graphics g){
-//        planeView.drawImage(g, plane);
-//        for(BulletController bulletController : bulletControllers) {
-//            bulletController.draw(g);
-//        }
-//    }
+
 
     public void mouseMoved(MouseEvent e) {
-        gameObject.moveTo( e.getX() - (gameObject.getWidth() / 2),
-                e.getY() - (gameObject.getHeight() / 2));
+        gameObject.moveTo(e.getX() ,e.getY() );
+
     }
+
+    public void mouseClicked(MouseEvent e) {
+        createBullet();
+    }
+
+    public static final PlaneController planeController = new PlaneController(
+                new Plane(GameConfig.DEFAULT_WIDTH / 2, GameConfig.DEFAULT_HEIGHT - Plane.PLANE_HEIGHT),
+                new GameView(Utils.loadImageFromRes("plane3.png"))
+            );
+
+    public static final PlaneController planeController2 = new PlaneController(
+                new Plane(GameConfig.DEFAULT_WIDTH  / 2, GameConfig.DEFAULT_HEIGHT - - Plane.PLANE_HEIGHT),
+                new GameView(Utils.loadImageFromRes("plane4.png"))
+            );
 }

@@ -10,6 +10,6 @@ public class Bullet extends  GameObject {
     public static final int BULLET_HEIGHT = 30;
 
     public Bullet(int x, int y) {
-        super(x, y, BULLET_WIDTH, BULLET_HEIGHT);
+        super(x, y, BULLET_WIDTH, BULLET_HEIGHT,Math.min(BULLET_WIDTH,BULLET_HEIGHT)/2);
     }
 }
