@@ -1,6 +1,8 @@
 package controllers;
 
+import models.Bullet;
 import models.GameObject;
+import utils.Utils;
 import views.GameView;
 
 /**
@@ -25,5 +27,13 @@ public class BulletController extends SingleController implements Contactable {
         if(contactable instanceof EnemyPlaneController) {
             ((EnemyPlaneController) contactable).destroy();
         }
+    }
+
+    public static BulletController create(GameObject gameObject){
+        BulletController bulletController = new BulletController(
+                new Bullet(gameObject.getMiddleX(), gameObject.getY()),
+                new GameView(Utils.loadImageFromRes("bullet.png"))
+        );
+        return bulletController;
     }
 }

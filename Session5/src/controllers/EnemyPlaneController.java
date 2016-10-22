@@ -1,5 +1,7 @@
 package controllers;
 
+import controllers.Behaviors.DownFlyBehavior;
+import controllers.Behaviors.FlyBehavior;
 import models.Bullet;
 import models.GameConfig;
 import models.GameObject;
@@ -19,10 +21,17 @@ public class EnemyPlaneController extends SingleController implements Contactabl
 
     private int count = 0;
 
-    public EnemyPlaneController(GameObject gameObject, GameView gameView) {
+    private FlyBehavior flyBehavior;
+
+    public EnemyPlaneController(GameObject gameObject, GameView gameView, FlyBehavior flyBehavior) {
         super(gameObject, gameView);
         butletControllerManager = new ControllerManager();
         CollisionPool.instance.register(this);
+        this.flyBehavior=flyBehavior;
+    }
+
+    public EnemyPlaneController(GameObject gameObject, GameView gameView) {
+        this(gameObject,gameView,new DownFlyBehavior());
     }
 
     @Override
@@ -34,18 +43,18 @@ public class EnemyPlaneController extends SingleController implements Contactabl
 
     @Override
     public void run() {
-        gameObject.move(0, SPEED);
+        flyBehavior.doFly(gameObject,SPEED);
 
         butletControllerManager.run();
 
         count++;
-        if (GameConfig.instance.getSeconds(count) > 1) {
+        if (GameConfig.instance.getSeconds(count)*2 > 1) {
             count = 0;
-            EnemyBulletController bulletController = new EnemyBulletController(
-                    new Bullet(gameObject.getMiddleX() - Bullet.BULLET_WIDTH / 2, gameObject.getBottom()),
-                    new GameView(Utils.loadImageFromRes("enemy_bullet.png")
-                    ));
-            butletControllerManager.add(bulletController);
+
+            //convert into factory design pattern
+            EnemyBulletController enemyBulletController = EnemyBulletController.create(gameObject);
+            butletControllerManager.add(enemyBulletController);
+
         }
     }
 

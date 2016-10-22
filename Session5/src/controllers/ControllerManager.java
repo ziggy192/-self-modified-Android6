@@ -44,8 +44,10 @@ public class ControllerManager implements BaseController {
 
     @Override
     public void draw(Graphics g) {
-        for(BaseController baseController : baseControllers) {
-            baseController.draw(g);
+        Iterator<BaseController> baseControllerIterator= baseControllers.iterator();
+        while (baseControllerIterator.hasNext()){
+            baseControllerIterator.next().draw(g);
         }
+
     }
 }

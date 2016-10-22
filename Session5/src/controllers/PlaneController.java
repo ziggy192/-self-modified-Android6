@@ -93,11 +93,7 @@ public class PlaneController extends SingleController implements Contactable {
 //    }
 
     private void createBullet() {
-        BulletController bulletController = new BulletController(
-                new Bullet(gameObject.getMiddleX(), gameObject.getY()),
-                new GameView(Utils.loadImageFromRes("bullet.png"))
-        );
-        bulletControllers.add(bulletController);
+        bulletControllers.add(BulletController.create(gameObject));
     }
 
     @Override
@@ -145,4 +141,6 @@ public class PlaneController extends SingleController implements Contactable {
         }
 
     }
+
+
 }

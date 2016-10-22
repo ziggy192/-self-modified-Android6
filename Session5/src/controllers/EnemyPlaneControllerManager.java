@@ -1,5 +1,6 @@
 package controllers;
 
+import controllers.Behaviors.DownRightFlyBehavior;
 import models.EnemyPlane;
 import utils.Utils;
 import views.GameView;
@@ -17,7 +18,8 @@ public class EnemyPlaneControllerManager extends ControllerManager {
             int x = i * (EnemyPlane.ENEMY_PLANE_WIDTH + 5);
             EnemyPlaneController enemyPlaneController = new EnemyPlaneController(
                     new EnemyPlane(x, y),
-                    new GameView(Utils.loadImageFromRes("plane1.png")));
+                    new GameView(Utils.loadImageFromRes("plane1.png")),
+                    new DownRightFlyBehavior());
             baseControllers.add(enemyPlaneController);
         }
 
