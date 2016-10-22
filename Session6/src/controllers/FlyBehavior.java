@@ -8,4 +8,6 @@ import models.GameObject;
 
 public interface FlyBehavior {
     void doFly(GameObject gameObject);
+    FlyBehavior changeDirection();
+    FlyBehavior newDirectionIfNeeded(GameObject gameObject);
 }

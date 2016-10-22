@@ -50,6 +50,11 @@ public class GameObject {
         this.y += dy;
     }
 
+    public void move(double dx, double dy){
+        this.x += dx;
+        this.y += dy;
+    }
+
     public int getMiddleX() {
         return x + width / 2;
     }

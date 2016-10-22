@@ -1,9 +1,6 @@
 package controllers;
 
-import models.Bullet;
-import models.EnemyPlane;
-import models.GameConfig;
-import models.GameObject;
+import models.*;
 import utils.Utils;
 import views.GameView;
 
@@ -18,10 +15,14 @@ public class EnemyPlaneController extends SingleController implements Contactabl
 
     private ControllerManager butletControllerManager;
 
+
+
     private int count = 0;
 
     private FlyBehavior flyBehavior;
     private ShootBehavior shootBehavior;
+
+    private GameObject planeGameObject;
 
     public EnemyPlaneController(GameObject gameObject, GameView gameView,
                                 FlyBehavior flyBehavior,
@@ -41,9 +42,7 @@ public class EnemyPlaneController extends SingleController implements Contactabl
     }
 
 
-    public void setFlyBehavior(FlyBehavior flyBehavior) {
-        this.flyBehavior = flyBehavior;
-    }
+
 
     @Override
     public void run() {
@@ -52,12 +51,9 @@ public class EnemyPlaneController extends SingleController implements Contactabl
         //gameObject.move(0, SPEED);
         if(flyBehavior != null) {
             this.flyBehavior.doFly(this.gameObject);
-            if (this.gameObject.getX()<=0 ){
-                setFlyBehavior(new DownRightFlyBehavior());
-            }
+            this.flyBehavior = this.flyBehavior.newDirectionIfNeeded(this.gameObject);
+
         }
-
-
         // End Fly
 
 
@@ -87,31 +83,38 @@ public class EnemyPlaneController extends SingleController implements Contactabl
         }
     }
 
-    public static EnemyPlaneController create(int x, int y, EnemyPlaneType type){
+    public static EnemyPlaneController create(int x, int y, EnemyPlaneType type,GameObject planeGameObject) {
 
         Image image = null;
         FlyBehavior flyBehavior = null;
         ShootBehavior shootBehavior = null;
-
-        if (type == EnemyPlaneType.GRAY){
-            image =Utils.loadImageFromRes("plane1.png");
-            flyBehavior = new DownLeftFlyBehavior(1);
+        EnemyPlane enemyPlane = new EnemyPlane(x,y);
+        if (type == EnemyPlaneType.GRAY) //Gray
+        {
+            image = Utils.loadImageFromRes("plane1.png");
+            flyBehavior = new DownFlyBehavior(1);
             shootBehavior = new DownShootBehavior();
+        } else if (type == EnemyPlaneType.RED) // Red
+        {
+            image = Utils.loadImageFromRes("plane2.png");
+            flyBehavior = new DownRightFlyBehavior(SPEED);
         }
+            else if(type == EnemyPlaneType.YELLOW) {
+            image = Utils.loadImageFromRes("enemy_plane_yellow_3.png");
+            flyBehavior= new DownLeftFlyBehavior(SPEED);
+            shootBehavior = new SmartShootBehavior(planeGameObject);
 
-        else if  (type == EnemyPlaneType.RED){
-            image =Utils.loadImageFromRes("plane2.png");
-            flyBehavior = new DownLeftFlyBehavior(1);
+
         }
 
         return new EnemyPlaneController(
-                new EnemyPlane(x, y),
+                enemyPlane,
                 new GameView(image),
                 flyBehavior,
                 shootBehavior);
     }
 
-
-
-
+    public static EnemyPlaneController create(int x, int y, EnemyPlaneType type){
+        return create(x,y,type,null);
+    }
 }

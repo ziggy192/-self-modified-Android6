@@ -24,12 +24,7 @@ public class EnemyBulletController extends SingleController implements Contactab
         super.run();
         if(flyBehavior != null) {
             flyBehavior.doFly(this.gameObject);
-
         }
-    }
-
-    public void setFlyBehavior(FlyBehavior flyBehavior) {
-        this.flyBehavior = flyBehavior;
     }
 
     @Override

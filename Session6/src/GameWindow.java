@@ -1,5 +1,6 @@
 import controllers.*;
 import models.GameConfig;
+import models.Gift;
 import models.Plane;
 import utils.Utils;
 import views.GameView;
@@ -35,7 +36,13 @@ public class GameWindow extends Frame implements Runnable {
 
         controllerManager.add(planeController);
         controllerManager.add(planeController2);
-        controllerManager.add(new EnemyPlaneControllerManager());
+        controllerManager.add(new EnemyPlaneControllerManager(planeController.getGameObject()));
+        controllerManager.add(
+                new GiftController(
+                                    new Gift(GameConfig.instance.getScreenWidth()*6/8,0),
+                                    new GameView(Utils.loadImageFromRes("power-up.png"))
+                    ));
+
         controllerManager.add(CollisionPool.instance);
 
         backBufferImage = new BufferedImage(backgroundWidth,

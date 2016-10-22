@@ -1,12 +1,18 @@
 package models;
 
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
+import java.awt.image.ImageObserver;
+
 /**
  * Created by apple on 10/16/16.
  */
 public class GameConfig {
     private final static int DEFAULT_DELAY = 17;
-    private static final int DEFAULT_WIDTH = 600;
-    private static final int DEFAULT_HEIGHT = 400;
+    private static final int DEFAULT_WIDTH = 800;
+    private static final int DEFAULT_HEIGHT = 600;
 
     private int threadDelayInMiliseconds;
     private int screenWidth;
@@ -49,6 +55,7 @@ public class GameConfig {
 //        }
 //        return instance;
 //    }
+
 
     public boolean yOutsideScreen(int y) {
         return y < 0 || y > screenHeight;

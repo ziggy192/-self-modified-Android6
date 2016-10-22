@@ -23,5 +23,6 @@ public class GameView {
                 gameObject.getWidth(),
                 gameObject.getHeight(),
                 null);
+
     }
 }

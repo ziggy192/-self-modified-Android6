@@ -22,11 +22,14 @@ public class PlaneController extends SingleController implements Contactable {
     private int dy;
     public static final int SPEED = 10;
 
+    private boolean powerUp;
+
     private ControllerManager bulletControllers;
 
     private PlaneController(Plane gameObject, GameView gameView) {
         super(gameObject, gameView);
         bulletControllers = new ControllerManager();
+        powerUp  = false;
         CollisionPool.instance.register(this);
     }
 
@@ -91,11 +94,23 @@ public class PlaneController extends SingleController implements Contactable {
 //    }
 
     private void createBullet() {
-        BulletController bulletController = new BulletController(
-                new Bullet(gameObject.getMiddleX(), gameObject.getY()),
-                new GameView(Utils.loadImageFromRes("bullet.png"))
-        );
-        bulletControllers.add(bulletController);
+        if (powerUp==false){
+            BulletController bulletController = new BulletController(
+                    new Bullet(gameObject.getMiddleX(), gameObject.getY()),
+                    new GameView(Utils.loadImageFromRes("bullet.png"))
+            );
+            bulletControllers.add(bulletController);
+        }
+
+        else
+        {
+            BulletController bulletController = new BulletController(
+                    new Bullet(gameObject.getMiddleX(), gameObject.getY()),
+                    new GameView(Utils.loadImageFromRes("bullet-double.png"))
+            );
+            bulletControllers.add(bulletController);
+        }
+
     }
 
     @Override
@@ -125,6 +140,10 @@ public class PlaneController extends SingleController implements Contactable {
                 new Plane(GameConfig.instance.getScreenWidth()  / 2, GameConfig.instance.getScreenHeight() - Plane.PLANE_HEIGHT),
                 new GameView(Utils.loadImageFromRes("plane4.png"))
             );
+
+    public void gotPowerUp(){
+        powerUp=true;
+    }
 
     @Override
     public void onCollide(Contactable contactable) {

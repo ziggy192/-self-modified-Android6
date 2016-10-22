@@ -17,4 +17,14 @@ public class DownFlyBehavior implements FlyBehavior {
     public void doFly(GameObject gameObject) {
         gameObject.move(0, speed);
     }
+
+    @Override
+    public FlyBehavior changeDirection() {
+        return this;
+    }
+
+    @Override
+    public FlyBehavior newDirectionIfNeeded(GameObject gameObject) {
+        return this;
+    }
 }
